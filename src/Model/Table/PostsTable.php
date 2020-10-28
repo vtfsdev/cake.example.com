@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Model\Table;
 
+// the Text class
+use Cake\Utility\Text;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -89,6 +91,22 @@ class PostsTable extends Table
             ->allowEmptyString('body');
 
         return $validator;
+    }
+
+    public function beforeMarshal($event, $data)
+    {
+        if (!isset($data['slug']) && !empty($data['title'])) {
+            $data['slug'] = $this->createSlug($data['title']);
+        }
+    }
+
+    public function createSlug($title)
+    {
+        return Text::slug(
+            strtolower(
+                substr($title, 0, 191)
+            )
+        );
     }
 
     /**
